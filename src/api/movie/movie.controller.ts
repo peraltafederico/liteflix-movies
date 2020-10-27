@@ -1,5 +1,8 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common'
-import { Movie } from '../../database/schemas/movie.schema'
+import { Body, Controller, Get, Post } from '@nestjs/common'
+import { ApiCreatedResponse } from '@nestjs/swagger'
+import { Movie } from 'src/database/schemas/movie.schema'
+import { CreatMovieRequest } from './dto/create-movie.dto'
+import { Movie as MovieDto } from './dto/movie.dto'
 import { MovieService } from './movie.service'
 
 @Controller('/movie')
@@ -7,16 +10,20 @@ export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
   @Post('/')
-  createMovie(
-    @Body() body: { title: string; imgUrl: string; tmdbGenreIds: number[] }
-  ): Promise<Movie> {
+  @ApiCreatedResponse({
+    description: 'Movie created successfully',
+    type: MovieDto,
+  })
+  createMovie(@Body() body: CreatMovieRequest): Promise<Movie> {
     return this.movieService.createMovie(body)
   }
 
   @Get('/')
-  getMoviesByGenres(
-    @Query() { genreIds }: { genreIds: string }
-  ): Promise<Movie[]> {
-    return this.movieService.getMoviesByGenres(genreIds)
+  @ApiCreatedResponse({
+    description: 'Movies returned successfully',
+    type: [MovieDto],
+  })
+  getMovies(): Promise<Movie[]> {
+    return this.movieService.getMovies()
   }
 }
