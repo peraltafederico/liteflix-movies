@@ -3,7 +3,6 @@ import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Logger } from '@nestjs/common/services/logger.service'
 import { Movie, MovieDocument } from 'src/database/schemas/movie.schema'
-import { toNumber } from 'lodash'
 
 @Injectable()
 export class MovieService {
@@ -15,7 +14,7 @@ export class MovieService {
   async createMovie(body: {
     title: string
     imgUrl: string
-    tmdbGenreIds: number[]
+    tmdbGenreId: number
   }): Promise<Movie> {
     try {
       let movie = new this.movieModel(body)
@@ -36,16 +35,9 @@ export class MovieService {
     }
   }
 
-  async getMoviesByGenres(ids: string): Promise<Movie[]> {
+  async getMovies(): Promise<Movie[]> {
     try {
-      console.log(ids)
-
-      const genres = ids.split(',').map((id) => toNumber(id))
-
-      const movies = await this.movieModel
-        .find({ tmdbGenreIds: { $in: genres } })
-        .lean()
-        .exec()
+      const movies = await this.movieModel.find().lean().exec()
 
       this.logger.log('Movies returned successfully')
 

@@ -12,7 +12,7 @@ export class Movie {
   imgUrl: string
 
   @Prop()
-  tmdbGenreIds: number[]
+  tmdbGenreId: number
 }
 
 export const MovieSchema = SchemaFactory.createForClass(Movie)
