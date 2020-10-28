@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common'
 import { ApiCreatedResponse } from '@nestjs/swagger'
 import { Movie } from 'src/database/schemas/movie.schema'
 import { CreatMovieRequest } from './dto/create-movie.dto'
+import { GroupedByGenreMovie } from './dto/grouped-by-genre-movie.dto'
 import { Movie as MovieDto } from './dto/movie.dto'
 import { MovieService } from './movie.service'
 
@@ -25,5 +26,14 @@ export class MovieController {
   })
   getMovies(): Promise<Movie[]> {
     return this.movieService.getMovies()
+  }
+
+  @Get('/grouped-by-genre')
+  @ApiCreatedResponse({
+    description: 'Grouped by genre moves returned successfully',
+    type: [GroupedByGenreMovie],
+  })
+  getMoviesGroupedByGenre(): Promise<GroupedByGenreMovie[]> {
+    return this.movieService.getMoviesGroupedByGenre()
   }
 }
