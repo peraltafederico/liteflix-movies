@@ -54,6 +54,9 @@ export class MovieService {
     return this.movieModel
       .aggregate([
         {
+          $sort: { _id: -1 },
+        },
+        {
           $group: {
             _id: '$tmdbGenreId',
             movies: {
