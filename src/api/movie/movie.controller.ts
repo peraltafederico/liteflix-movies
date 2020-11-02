@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common'
-import { ApiCreatedResponse } from '@nestjs/swagger'
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger'
 import { Movie } from 'src/database/schemas/movie.schema'
 import { CreatMovieRequest } from './dto/create-movie.dto'
 import { GroupedByGenreMovie } from './dto/grouped-by-genre-movie.dto'
@@ -20,7 +20,7 @@ export class MovieController {
   }
 
   @Get('/')
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'Movies returned successfully',
     type: [MovieDto],
   })
@@ -29,7 +29,7 @@ export class MovieController {
   }
 
   @Get('/grouped-by-genre')
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'Grouped by genre moves returned successfully',
     type: [GroupedByGenreMovie],
   })
