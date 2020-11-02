@@ -3,7 +3,7 @@ import { Model } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { Logger } from '@nestjs/common/services/logger.service'
 import { Movie, MovieDocument } from 'src/database/schemas/movie.schema'
-import { toNumber } from 'lodash'
+import { GroupedByGenreMovie } from './dto/grouped-by-genre-movie.dto'
 
 @Injectable()
 export class MovieService {
@@ -15,7 +15,7 @@ export class MovieService {
   async createMovie(body: {
     title: string
     imgUrl: string
-    tmdbGenreIds: number[]
+    tmdbGenreId: number
   }): Promise<Movie> {
     try {
       let movie = new this.movieModel(body)
@@ -36,16 +36,9 @@ export class MovieService {
     }
   }
 
-  async getMoviesByGenres(ids: string): Promise<Movie[]> {
+  async getMovies(): Promise<Movie[]> {
     try {
-      console.log(ids)
-
-      const genres = ids.split(',').map((id) => toNumber(id))
-
-      const movies = await this.movieModel
-        .find({ tmdbGenreIds: { $in: genres } })
-        .lean()
-        .exec()
+      const movies = await this.movieModel.find().lean().exec()
 
       this.logger.log('Movies returned successfully')
 
@@ -55,5 +48,31 @@ export class MovieService {
 
       throw error
     }
+  }
+
+  getMoviesGroupedByGenre(): Promise<GroupedByGenreMovie[]> {
+    return this.movieModel
+      .aggregate([
+        {
+          $sort: { _id: -1 },
+        },
+        {
+          $group: {
+            _id: '$tmdbGenreId',
+            movies: {
+              $push: '$$ROOT',
+            },
+            tmdbGenreId: {
+              $first: '$tmdbGenreId',
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+          },
+        },
+      ])
+      .exec()
   }
 }
